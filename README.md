@@ -1,93 +1,26 @@
-# Marketing Hackathon: ControlFlow
+# Marketing Team Hackathon
 
-![](controlflow_banner.png)
+## Setup
+
+Follow the instructions in the [Setup](setup.md) document to get your environment set up and test out Prefect and ControlFlow.
 
 ## Build with ControlFlow
 
-### Setup
-
-1. Working with virtual environments in Python is important for isolating dependencies. It can be tricky to set them up. Create a new virtual environment - use conda or venv. See [these instructions](https://gist.github.com/discdiver/0bb3bf96f02c182f96d45278f9564551), if needed.
-1. Install the latest, unreleased, version of ControlFlow from the `main` branch into your virtual environment:
-   `pip install git+https://github.com/PrefectHQ/ControlFlow`
-   or with uv installed:
-   `uv pip install git+https://github.com/PrefectHQ/ControlFlow`
-1. Upgrade Prefect to the latest Prefect 3.0rc version:
-    `pip install prefect --pre`
-    or with uv installed:
-    `uv pip install prefect --pre`
-1. Connect to Prefect Cloud (this assumes you already have a Prefect Cloud account), if you aren't already authenticated from the CLI:
-    `prefect cloud login`
-
-### Run a test Prefect flow
-
-Run a Prefect flow to test your Prefect setup.
-
-1. In a text editor (VS Code is great if you are choosing one) copy the following:
-
-```python
-import httpx
-from prefect import flow
-
-@flow(log_prints=True)
-def test_flow():
-    res = httpx.get("https://example.com")
-    print(res)
-
-if __name__ == "__main__":
-    test_flow()
-```
-
-Talk through what the code is doing, if you aren't 100% sure.
-
-1. Run the script from the terminal with `python my_flow.py`
-
-1. Check out the **Runs** tab in the Prefect Cloud UI.
-
-That's good for now. Let's move on to ControlFlow!
-
-### Configure OpenAI for ControlFlow
-
-1. Log in or sign up for an [OpenAI account](https://platform.openai.com/signup).
-1. Create and copy an [API key](https://platform.openai.com/api-keys) from your account.
-1. Save your OpenAI API key locally:
-    Set the API key as an environment variable: `export OPENAI_API_KEY='paste-your-api-key-here'`
-    This is a temporary way to set the key - it only lives in your current terminal session.
-    If you want to set the key permanently, you can add it as a line to the hidden `.zshrc` file in your home directory:
-    `export OPENAI_API_KEY='paste-key-here'`
-    This will set the environment variable every time you open a new terminal session.
-1. Save the following ControlFlow Python code in a file named `my_number_picker.py`:
-
-    ```python
-    from controlflow import Agent, Task, flow
-
-    a1 = Agent(name="A1", instructions="You struggle to make decisions.")
-    a2 = Agent(
-        name="A2",
-        instructions="You like to make decisions.",
-    )
-
-
-    @flow
-    def demo():
-        task = Task("choose a number between 1 and 100", agents=[a1, a2], result_type=int)
-        return task.run()
-
-
-    if __name__ == "__main__":
-        demo()
-    ```
-
-1. Run the script from the terminal with `python my_number_picker.py`
-1. Check out the results in the terminal.
-1. Check out the results in the **Runs** tab in the Prefect Cloud UI. What do you notice?
-
-### Project
-
 Now that we've got things set up and we're starting to see the power of Prefect and ControlFlow, let's tackle a marketing business problem and build a proof of concept to solve it with our tools.
 
-This project will require us to use a built-in LangChain tool to give your agent more capabilities.
+### Problem
 
-Create a deployment so that we can run the flow on a schedule and off of our machine.
+Your sales team wants to reach out to existing customers when the customer's company is in the news. Create a flow that will check the news for a customer's company once a day, summarize the news article, and send an email to the sales team with the summary.
+
+Note, this project will require us to use a built-in LangChain tool to give your agent more capabilities.
+
+You will want to use several ControlFlow tasks to fetch the news, extract the news, and summarize it.
+
+For this example, let's assume that the list of Prefect companies is Google, Apple, and Microsoft.
+
+## Create a deployment
+
+Let's turn our flow into a deployment so that we can run the flow on a schedule.
 
 1: Use `.serve` to create a deployment that can run the flow on a schedule.
 
